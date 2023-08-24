@@ -1,16 +1,32 @@
 #!/usr/bin/python3
-# Displays all values in the states table of the database hbtn_0e_0_usa
-# whose name matches that supplied as argument.
-# Safe from SQL injections.
-# Usage: ./3-my_safe_filter_states.py <mysql username> \
-#                                     <mysql password> \
-#                                     <database name> \
-#                                     <state name searched>
-import sys
+"""
+This script takes an argument and displays all values in
+the 'states' hbtn_0e_0_usa database table whose names matches the argument
+The script should be safe from SQL Injections
+"""
 import MySQLdb
+from sys import argv
 
-if __name__ == "__main__":
-    db = MySQLdb.connect(user=sys.argv[1], passwd=sys.argv[2], db=sys.argv[3])
-    c = db.cursor()
-    c.execute("SELECT * FROM `states`")
-    [print(state) for state in c.fetchall() if state[1] == sys.argv[4]]
+if __name__ == '__main__':
+
+    # create a connection to the database
+    db = MySQLdb.connect(host='localhost', port=3306,
+                         user=argv[1], passwd=argv[2],
+                         db=argv[3])
+
+    # create a curser object to execute SQL queries
+    cur = db.cursor()
+
+    """
+    define an SQL query with a parameter placeholder
+    a parameter placeholder is one of the measures used to prevent
+    an SQL Injection
+    """
+    query = "SELECT * FROM states WHERE BINARY name = %s"
+
+    # execute query
+    cur.execute(query, (argv[4],))
+    matched_states = cur.fetchall()
+    for state in matched_states:
+        print(state)
+    db.close()
