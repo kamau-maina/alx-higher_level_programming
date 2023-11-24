@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """
-prints the `State` object with the name passed as argument from the
-database hbtn_0e_6_usa
+Script to add the `State` object `Louisiana` to the
+database 'hbtn_0e_6_usa'
 """
 from sys import argv
 from model_state import Base, State
@@ -17,11 +17,13 @@ if __name__ == '__main__':
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    # query table
-    state_name = argv[4]
-    state = session.query(State).filter(State.name == state_name).first()
+    # create State object/ instace
+    new_state = State(name='Louisiana')
 
-    if state:
-        print(state.id)
-    else:
-        print('Not found')
+    # add new State object to our database
+    session.add(new_state)
+    session.commit()  # flush the changes to the database
+
+    # print id of new State object
+    state = session.query(State).filter_by(name='Louisiana').first()
+    print(state.id)
